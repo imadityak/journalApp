@@ -14,6 +14,7 @@ import java.util.Date;
 // and the object of this class will be stored as documents in that collection
 @Document(collection="journal_entries")
 @Data
+@NoArgsConstructor
 public class JournalEntry {
 
     @Id

@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class healthCheckController {
+public class HealthCheckController {
 
     //This string value will be converted to JSON and returned to the client
     @GetMapping("/health")
