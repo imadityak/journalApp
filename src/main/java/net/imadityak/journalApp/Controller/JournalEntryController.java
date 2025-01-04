@@ -1,42 +1,43 @@
 package net.imadityak.journalApp.Controller;
 
 import net.imadityak.journalApp.Entity.JournalEntry;
+import net.imadityak.journalApp.Service.JournalServices;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/journal")
 public class JournalEntryController {
-    private Map<Long, JournalEntry> journalEntries = new HashMap<>();
+
+    @Autowired
+    private JournalServices journalServices;
 
     @GetMapping()
     public List<JournalEntry> getALl(){
-        return new ArrayList<>(journalEntries.values());
+        return journalServices.getAll();
     }
 
     @GetMapping("/id/{myId}")
-    public JournalEntry getEntry(@PathVariable long myId){
-        return journalEntries.get(myId);
+    public JournalEntry getEntry(@PathVariable ObjectId myId){
+        return journalServices.getEntry(myId);
     }
 
     @PostMapping
     public boolean createEntry(@RequestBody JournalEntry entry){
-        journalEntries.put(entry.getId(), entry);
-        return true;
+        return journalServices.createEntry(entry);
     }
 
     @DeleteMapping("/id/{myId}")
-    public boolean deleteEntry(@PathVariable long myId){
-        journalEntries.remove(myId);
-        return true;
+    public boolean deleteEntry(@PathVariable ObjectId myId){
+        return journalServices.deleteEntry(myId);
     }
 
     @PutMapping("/id/{myId}")
-    public JournalEntry updateEntry(@PathVariable long myId, @RequestBody JournalEntry entry){
-        return journalEntries.put(myId, entry);
+    public JournalEntry updateEntry(@PathVariable ObjectId myId, @RequestBody JournalEntry entry){
+        return journalServices.updateEntry(myId, entry);
     }
 }
