@@ -26,7 +26,7 @@ public class JournalServices {
     @Autowired
     private UserRepo userRepo;
 
-    //get_all
+    //get_all(working)
     public ResponseEntity<?> getAll(String username){
         User user = userRepo.findByUsername(username);
         List<JournalEntry> allEntries = user.getEntries();
@@ -45,28 +45,31 @@ public class JournalServices {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    //post
+    //post(working)
     public ResponseEntity<JournalEntry> createEntry(JournalEntry entry, String username){
         try {
             User user = userRepo.findByUsername(username);
             entry.setDate(LocalDateTime.now());
             JournalEntry saved = journalRepo.save(entry);
             user.getEntries().add(saved);
-            userServices.createEntry(user);
+            userServices.saveEntry(user);
             return new ResponseEntity<>(entry, HttpStatus.CREATED);
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    //delete
-    public ResponseEntity<?> deleteEntry(ObjectId id){
+    //delete(working) - also deletes the entry from the user's list of entries
+    public ResponseEntity<?> deleteEntry(ObjectId id, String username){
+        User user = userRepo.findByUsername(username);
+        user.getEntries().removeIf(entry -> entry.getId().equals(id));
+        userServices.saveEntry(user);
         journalRepo.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    //put
-    public ResponseEntity<?> updateEntry(ObjectId id, JournalEntry entry){
+    //put(we will see it later)
+    public ResponseEntity<?> updateEntry(ObjectId id, JournalEntry entry, String username){
         JournalEntry existingEntry = journalRepo.findById(id).orElse(null);
         if(existingEntry == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

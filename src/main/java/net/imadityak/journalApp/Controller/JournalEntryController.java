@@ -18,29 +18,35 @@ public class JournalEntryController {
     @Autowired
     private JournalServices journalServices;
 
-
+    //get_all(working)
     @GetMapping("/{username}")
     public ResponseEntity<?> getALlEntriesOfUser(@PathVariable String username){
         return journalServices.getAll(username);
     }
 
+    //get_by_id(If you got the id then you can get the entry.)
     @GetMapping("/id/{myId}")
     public ResponseEntity<?> getEntry(@PathVariable ObjectId myId){
         return journalServices.getEntry(myId);
     }
 
+    //post(working)
     @PostMapping("/{username}")
     public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry entry, @PathVariable String username){
         return journalServices.createEntry(entry, username);
     }
 
-    @DeleteMapping("/id/{myId}")
-    public ResponseEntity<?> deleteEntry(@PathVariable ObjectId myId){
-        return journalServices.deleteEntry(myId);
+    //delete(working)
+    @DeleteMapping("/id/{username}/{myId}")
+    public ResponseEntity<?> deleteEntry(@PathVariable ObjectId myId, @PathVariable String username){
+        return journalServices.deleteEntry(myId, username);
     }
 
-    @PutMapping("/id/{myId}")
-    public ResponseEntity<?> updateEntry(@PathVariable ObjectId myId, @RequestBody JournalEntry entry){
-        return journalServices.updateEntry(myId, entry);
+    //update()
+    @PutMapping("/id/{username}/{myId}")
+    public ResponseEntity<?> updateEntry(@PathVariable ObjectId myId,
+                                         @RequestBody JournalEntry entry,
+                                         @PathVariable String username){
+        return journalServices.updateEntry(myId, entry, username);
     }
 }

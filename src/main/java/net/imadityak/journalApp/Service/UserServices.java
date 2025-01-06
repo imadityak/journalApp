@@ -22,7 +22,7 @@ public class UserServices {
     }
 
     //post
-    public User createEntry(User user){
+    public User saveEntry(User user){
             return userRepo.save(user);
     }
 
