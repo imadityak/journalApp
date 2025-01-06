@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,16 +47,19 @@ public class JournalServices {
     }
 
     //post(working)
-    public ResponseEntity<JournalEntry> createEntry(JournalEntry entry, String username){
+    @Transactional //this annotation is used to make sure that the transaction is completed successfully
+    public void saveEntry(JournalEntry entry, String username){
         try {
             User user = userRepo.findByUsername(username);
             entry.setDate(LocalDateTime.now());
             JournalEntry saved = journalRepo.save(entry);
             user.getEntries().add(saved);
             userServices.saveEntry(user);
-            return new ResponseEntity<>(entry, HttpStatus.CREATED);
+
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            System.out.println(e);
+            throw new RuntimeException("Error while saving the entry");
+
         }
     }
 

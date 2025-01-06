@@ -2,9 +2,9 @@ package net.imadityak.journalApp.Controller;
 
 import net.imadityak.journalApp.Entity.JournalEntry;
 import net.imadityak.journalApp.Service.JournalServices;
-import net.imadityak.journalApp.Service.UserServices;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +33,12 @@ public class JournalEntryController {
     //post(working)
     @PostMapping("/{username}")
     public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry entry, @PathVariable String username){
-        return journalServices.createEntry(entry, username);
+        try {
+            journalServices.saveEntry(entry, username);
+            return new ResponseEntity<>(entry, HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     //delete(working)
