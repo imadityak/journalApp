@@ -24,63 +24,41 @@ public class JournalServices {
     @Autowired
     private UserServices userServices;
 
-    @Autowired
-    private UserRepo userRepo;
-
     //get_all(working)
-    public ResponseEntity<?> getAll(String username){
-        User user = userRepo.findByUsername(username);
-        List<JournalEntry> allEntries = user.getEntries();
-        if(allEntries!= null && !allEntries.isEmpty()){
-            return new ResponseEntity<>(allEntries, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public List<JournalEntry> getAll(String username){
+        return journalRepo.findAll();
     }
 
     //get_by_id
-    public ResponseEntity<?> getEntry(ObjectId id){
-        Optional<JournalEntry> entry = journalRepo.findById(id);
-        if(entry.isPresent()){
-            return new ResponseEntity<>(entry.get(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public Optional<JournalEntry> findById(ObjectId id){
+        return journalRepo.findById(id);
     }
 
     //post(working)
-    @Transactional //this annotation is used to make sure that the transaction is completed successfully
+    @Transactional //this annotation is used for atomicity
     public void saveEntry(JournalEntry entry, String username){
         try {
-            User user = userRepo.findByUsername(username);
+            User user = userServices.findByUserName(username);
             entry.setDate(LocalDateTime.now());
             JournalEntry saved = journalRepo.save(entry);
             user.getEntries().add(saved);
             userServices.saveEntry(user);
-
         }catch (Exception e){
             System.out.println(e);
-            throw new RuntimeException("Error while saving the entry");
-
+//            throw new RuntimeException("Error while saving the entry");
         }
+    }
+
+    //method overload
+    public void saveEntry(JournalEntry entry){
+        journalRepo.save(entry);
     }
 
     //delete(working) - also deletes the entry from the user's list of entries
-    public ResponseEntity<?> deleteEntry(ObjectId id, String username){
-        User user = userRepo.findByUsername(username);
+    public void deleteById(ObjectId id, String username){
+        User user = userServices.findByUserName(username);
         user.getEntries().removeIf(entry -> entry.getId().equals(id));
         userServices.saveEntry(user);
         journalRepo.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    //put(we will see it later)
-    public ResponseEntity<?> updateEntry(ObjectId id, JournalEntry entry, String username){
-        JournalEntry existingEntry = journalRepo.findById(id).orElse(null);
-        if(existingEntry == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        existingEntry.setTitle(entry.getTitle());
-        existingEntry.setContent(entry.getContent());
-        journalRepo.save(existingEntry);
-        return new ResponseEntity<>(existingEntry, HttpStatus.OK);
     }
 }

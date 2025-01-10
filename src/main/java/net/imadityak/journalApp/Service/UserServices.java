@@ -36,4 +36,8 @@ public class UserServices {
         userName.setPassword(user.getPassword());
         return new ResponseEntity<>(userRepo.save(userName), HttpStatus.OK);
     }
+
+    public User findByUserName(String username){
+        return userRepo.findByUsername(username);
+    }
 }
