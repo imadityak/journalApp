@@ -45,7 +45,7 @@ public class JournalServices {
             userServices.saveEntry(user);
         }catch (Exception e){
             System.out.println(e);
-//            throw new RuntimeException("Error while saving the entry");
+            throw new RuntimeException("Error while saving the entry");
         }
     }
 
